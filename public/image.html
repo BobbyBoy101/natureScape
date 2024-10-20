@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Details</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+    <div class="image-details" id="image-details">
+    </div>
+    <script>
+        async function fetchImage() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const imageId = urlParams.get('id');
+            console.log('Image ID:', imageId); // Debugging line
+            if (!imageId) {
+                console.error('No image ID found in URL');
+                return;
+            }
+            const response = await fetch(`/images/${imageId}`);
+            if (!response.ok) {
+                console.error('Failed to fetch image:', response.statusText);
+                return;
+            }
+            const image = await response.json();
+            const container = document.getElementById('image-details');
+            container.innerHTML = `
+                <img class="responsive-img" src="data:image/${image.img.contentType};base64,${image.img.data}" alt="${image.name}" />
+                <div>
+                    <h5>NAME: ${image.name}</h5>
+                    <p>DESCRIPTION: ${image.desc}</p>
+                    <button onclick="deleteImage('${image._id}')">Delete</button>
+                </div>
+            `;
+        }
+
+        async function deleteImage(id) {
+            console.log(`Attempting to delete image with id: ${id}`); // Debugging line
+            const response = await fetch(`/images/${id}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                console.log('Image deleted successfully'); // Debugging line
+                window.location.href = '/'; // Refresh page after deletion
+            } else {
+                console.error('Error deleting image:', response.statusText); // Debugging line
+                alert('Error deleting image');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchImage);
+    </script>
+</body>
+</html>
