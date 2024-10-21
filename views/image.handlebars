@@ -1,8 +1,8 @@
 <div class="image-details" id="image-details">
     <img class="responsive-img" src="data:image/{{photo.img.contentType}};base64,{{photo.img.data}}" alt="{{photo.name}}" />
-    <div>
-        <h5>NAME: {{photo.name}}</h5>
-        <p>DESCRIPTION: {{photo.desc}}</p>
+    <div class="image-text">
+        <h5 class="image-name">NAME: {{photo.name}}</h5>
+        <p class="image-desc">DESCRIPTION: {{photo.desc}}</p>
         <button onclick="deleteImage('{{photo._id}}')">Delete</button>
     </div>
 </div>

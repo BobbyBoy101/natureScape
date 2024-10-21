@@ -35,7 +35,7 @@
                     <a href="/images/photo/${image._id}">
                         <img class="responsive-img" src="data:image/${image.img.contentType};base64,${image.img.data}" alt="${image.name}" />
                     </a>
-                    <div>
+                    <div class="image-details">
                         <h5>${image.name}</h5>
                         <p>${image.desc}</p>
                         <button onclick="deleteImage('${image._id}')">Delete</button>
