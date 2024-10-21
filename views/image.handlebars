@@ -1,0 +1,23 @@
+<div class="image-details" id="image-details">
+    <img class="responsive-img" src="data:image/{{photo.img.contentType}};base64,{{photo.img.data}}" alt="{{photo.name}}" />
+    <div>
+        <h5>NAME: {{photo.name}}</h5>
+        <p>DESCRIPTION: {{photo.desc}}</p>
+        <button onclick="deleteImage('{{photo._id}}')">Delete</button>
+    </div>
+</div>
+<script>
+    async function deleteImage(id) {
+        console.log(`Attempting to delete image with id: ${id}`); // Debugging line
+        const response = await fetch(`/images/${id}`, {
+            method: 'DELETE'
+        });
+        if (response.ok) {
+            console.log('Image deleted successfully'); // Debugging line
+            window.location.href = '/'; // Refresh page after deletion
+        } else {
+            console.error('Error deleting image:', response.statusText); // Debugging line
+            alert('Error deleting image');
+        }
+    }
+</script>

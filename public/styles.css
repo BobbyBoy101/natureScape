@@ -55,7 +55,7 @@ form div {
 
 .file-upload-container button[type="submit"] {
     margin-left: 10px;
-    padding: 10px 20px;
+    padding: 10px 20px; /* padding: top right bottom left */
     font-size: 16px;
     cursor: pointer;
 }
@@ -68,20 +68,43 @@ form div {
 .image-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 15px;
     justify-content: center;
+    padding: 20px;
+    
 }
 
 .image-item {
     flex: 1 1 calc(33.333% - 10px);
     box-sizing: border-box;
     text-align: center;
+    margin-bottom: 20px; /* Add margin to the bottom of each image item */
 }
 
 .image-details {
     text-align: center;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.image-details h5 {
+    margin-bottom: 10px; /* Adjust space below the name */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.image-details p {
+    margin-bottom: 10px; /* Adjust space below the description */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .image-details div {
     margin-top: 10px;
+}
+
+.image-details button {
+    margin-bottom: 10px; /* Add margin to the bottom of the delete button */
 }

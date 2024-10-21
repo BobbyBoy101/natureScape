@@ -1,0 +1,63 @@
+    <h1>Upload image to mongoDB</h1>
+    <hr />
+    <div>
+        <form action="/images" method="POST" enctype="multipart/form-data">
+            <div>
+                <label for="name">Image Title</label>
+                <input type="text" id="name" placeholder="Name" value="" name="name" required />
+            </div>
+            <div>
+                <label for="desc">Image Description</label>
+                <textarea id="desc" name="desc" value="" rows="1" placeholder="Description" required></textarea>
+            </div>
+            <div class="file-upload-container">
+                <input type="file" id="image" name="image" value="" required />
+                <button type="submit">Submit</button>
+            </div>
+        </form>
+    </div>
+    <hr />
+    <div id="image-container" class="image-container"></div>
+    <script>
+        async function fetchImages() {
+            const response = await fetch('/images');
+            if (!response.ok) {
+                console.error('Error fetching images:', response.statusText);
+                return;
+            }
+            const images = await response.json();
+            const container = document.getElementById('image-container');
+            container.innerHTML = '';
+            images.forEach(image => {
+                const div = document.createElement('div');
+                div.className = 'image-item';
+                div.innerHTML = `
+                    <a href="/images/photo/${image._id}">
+                        <img class="responsive-img" src="data:image/${image.img.contentType};base64,${image.img.data}" alt="${image.name}" />
+                    </a>
+                    <div>
+                        <h5>${image.name}</h5>
+                        <p>${image.desc}</p>
+                        <button onclick="deleteImage('${image._id}')">Delete</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        async function deleteImage(id) {
+            console.log(`Attempting to delete image with id: ${id}`);
+            const response = await fetch(`/images/${id}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                console.log('Image deleted successfully');
+                fetchImages(); // Refresh the image list
+            } else {
+                console.error('Error deleting image:', response.statusText);
+                alert('Error deleting image');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchImages);
+    </script>

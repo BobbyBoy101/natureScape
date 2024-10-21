@@ -29,25 +29,51 @@ router.get('/', async (req, res) => {
 });
 
 // Route to fetch a single image by ID
-router.get('/:id', async (req, res) => {
+/* router.get('/:id', async (req, res) => {
+    const photoId = req.params.id;
     try {
-        const image = await Image.findById(req.params.id);
-        if (!image) {
+        const photoData = await Image.findById(photoId);
+        if (!photoData) {
             return res.status(404).send("Image not found");
         }
-        const formattedImage = {
-            _id: image._id,
-            name: image.name,
-            desc: image.desc,
-            img: {
-                data: image.img.data.toString('base64'),
-                contentType: image.img.contentType
-            }
-        };
-        res.json(formattedImage);
+        // const formattedImage = {
+        //     _id: image._id,
+        //     name: image.name,
+        //     desc: image.desc,
+        //     img: {
+        //         data: image.img.data.toString('base64'),
+        //         contentType: image.img.contentType
+        //     }
+        // };
+        // res.json(formattedImage);
+        res.render('image', { images: photoData });
     } catch (err) {
         console.log(err);
         res.status(500).send("Error retrieving image");
+    }
+}); */
+
+// Route to display a specific photo
+router.get('/photo/:id', async (req, res) => {
+    const photoId = req.params.id;
+    try {
+        const photoData = await Image.findById(photoId);
+        if (!photoData) {
+            return res.status(404).send('Photo not found');
+        }
+        const base64Image = photoData.img.data.toString('base64');
+        res.render('image', { 
+            photo: {
+                ...photoData.toObject(),
+                img: {
+                    contentType: photoData.img.contentType,
+                    data: base64Image
+                }
+            }
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error');
     }
 });
 
