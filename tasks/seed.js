@@ -38,7 +38,7 @@ const seedImages = async () => {
 
         // Filter out non-image files
         if (!['.jpg', '.jpeg', '.png', '.heic'].includes(fileExtension)) {
-            console.log(`Skipping non-image file: ${file}`);
+            console.log(`Non-image file ${file} found, skipping...`);
             continue;
         }
 
