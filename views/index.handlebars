@@ -1,7 +1,7 @@
     <h1>Upload image to mongoDB</h1>
     <hr />
     <div>
-        <form action="/images" method="POST" enctype="multipart/form-data">
+        <form action="/images/upload" method="POST" enctype="multipart/form-data">
             <div>
                 <label for="name">Image Title</label>
                 <input type="text" id="name" placeholder="Name" value="" name="name" required />
@@ -11,7 +11,7 @@
                 <textarea id="desc" name="desc" value="" rows="1" placeholder="Description" required></textarea>
             </div>
             <div class="file-upload-container">
-                <input type="file" id="image" name="image" value="" required />
+                <input type="file" id="image" name="image" accept="image/*" value="" required />
                 <button type="submit">Submit</button>
             </div>
         </form>

@@ -6,7 +6,8 @@ const imageSchema = new mongoose.Schema({
     img: {
         data: Buffer,
         contentType: String
-    }
+    },
+    metadata: Object
 });
 
 const Image = mongoose.model('Image', imageSchema);

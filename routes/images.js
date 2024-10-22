@@ -1,14 +1,10 @@
 import express from 'express';
-import multer from 'multer';
 import Image from '../model.js';
+import exifParser from 'exif-parser';
 //import { Image } from '../config/mongoCollections.js';
 //import { ObjectId } from 'mongodb';
 
 const router = express.Router();
-
-// Multer setup for file uploads (in-memory storage)
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
 
 // Route to fetch all images
 router.get('/', async (req, res) => {
@@ -29,31 +25,6 @@ router.get('/', async (req, res) => {
         res.status(500).send("Error retrieving images");
     }
 });
-
-// Route to fetch a single image by ID
-/* router.get('/:id', async (req, res) => {
-    const photoId = req.params.id;
-    try {
-        const photoData = await Image.findById(photoId);
-        if (!photoData) {
-            return res.status(404).send("Image not found");
-        }
-        // const formattedImage = {
-        //     _id: image._id,
-        //     name: image.name,
-        //     desc: image.desc,
-        //     img: {
-        //         data: image.img.data.toString('base64'),
-        //         contentType: image.img.contentType
-        //     }
-        // };
-        // res.json(formattedImage);
-        res.render('image', { images: photoData });
-    } catch (err) {
-        console.log(err);
-        res.status(500).send("Error retrieving image");
-    }
-}); */
 
 // Route to display a specific photo
 router.get('/photo/:id', async (req, res) => {
@@ -79,23 +50,41 @@ router.get('/photo/:id', async (req, res) => {
     }
 });
 
-// Route to upload a new image
-router.post('/', upload.single('image'), async (req, res) => {
-    try {
-        const obj = {
-            name: req.body.name,
-            desc: req.body.desc,
-            img: {
-                data: req.file.buffer,
-                contentType: req.file.mimetype
-            }
-        };
+// Route to upload an image
+router.post('/upload', async (req, res) => {
+    const maxUploadSize = 16 * 1024 * 1024; // 16MB
 
-        await Image.create(obj);
+    if (!req.files || Object.keys(req.files).length === 0) {
+        return res.status(400).send('No files were uploaded.');
+    }
+    if (req.files.image.size > maxUploadSize) {
+        return res.status(400).send(`Photo size must be less than ${maxUploadSize}`);
+    }
+req.files.buff
+    const { name, desc } = req.body;
+    const imageFile = req.files.image;
+
+    // Extract metadata from photo
+    const parser = exifParser.create(imageFile.data);
+    const metadata = parser.parse();
+
+    // Create a new image document
+    const newImage = new Image({
+        name: name,
+        desc: desc,
+        img: {
+            data: imageFile.data,
+            contentType: imageFile.mimetype
+        },
+        metadata: metadata.tags
+    });
+
+    try {
+        await newImage.save();
         res.redirect('/');
     } catch (err) {
-        console.log(err);
-        res.status(500).send("Error uploading image");
+        console.error(err);
+        res.status(500).send('Server error');
     }
 });
 
