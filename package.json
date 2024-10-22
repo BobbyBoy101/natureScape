@@ -1,15 +1,21 @@
 {
-  "name": "cs-546-lab-2",
+  "name": "nature_scape",
   "version": "1.0.0",
-  "description": "My lab 2 module",
+  "description": "CS546 Final Project",
   "main": "app.js",
   "type": "module",
   "scripts": {
+    "seed": "node tasks/seed.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js"
   },
-  "author": "Bob_Hampton_20026625",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BobbyBoy101/natureScape.git"
+  },
+  "author": "Bob_Hampton_20026625, Mark_Lewis_20026055, Sameer_Dharsee_20026611, Vraj_Patel_20026532, Pavan_gandi_10446603",
   "license": "ISC",
+  "homepage": "https://github.com/BobbyBoy101/NatureScape#readme",
   "dependencies": {
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
