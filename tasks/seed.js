@@ -13,10 +13,18 @@ dotenv.config();
 const connectDB = async () => {
     try {
         await mongoose.connect(process.env.MONGO_URL);
-        await mongoose.connection.dropDatabase();
-        console.log('DB dropped and is now connected');
+        console.log('DB Connected');
     } catch (err) {
         console.error('DB Connection Error:', err);
+    }
+};
+
+const dropDatabase = async () => {
+    try {
+        await mongoose.connection.dropDatabase();
+        console.log('Database dropped');
+    } catch (err) {
+        console.error('Error dropping database:', err);
     }
 };
 
@@ -26,11 +34,19 @@ const seedImages = async () => {
 
     for (const file of imageFiles) {
         const filePath = path.join(imageFolder, file);
+        const fileExtension = path.extname(file).toLowerCase();
+
+        // Filter out non-image files
+        if (!['.jpg', '.jpeg', '.png', '.heic'].includes(fileExtension)) {
+            console.log(`Skipping non-image file: ${file}`);
+            continue;
+        }
+
         const fileData = fs.readFileSync(filePath);
-        const contentType = 'image/' + path.extname(file).slice(1);
+        const contentType = 'image/' + fileExtension.slice(1);
 
         const newImage = new Image({
-            name: path.basename(file, path.extname(file)),
+            name: path.basename(file, fileExtension),
             desc: 'Seed image',
             img: {
                 data: fileData,
@@ -49,6 +65,7 @@ const seedImages = async () => {
 
 const runSeed = async () => {
     await connectDB();
+    await dropDatabase();
     await seedImages();
     mongoose.connection.close();
 };
