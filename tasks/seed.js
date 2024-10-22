@@ -36,7 +36,7 @@ const seedImages = async () => {
         const filePath = path.join(imageFolder, file);
         const fileExtension = path.extname(file).toLowerCase();
 
-        // Filter out non-image files
+        // Filter out non-image files like .DS_Store >_<
         if (!['.jpg', '.jpeg', '.png', '.heic'].includes(fileExtension)) {
             console.log(`Non-image file ${file} found, skipping...`);
             continue;
