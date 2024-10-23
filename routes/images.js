@@ -1,8 +1,10 @@
-import express from 'express';
-import Image from '../model.js';
-import exifParser from 'exif-parser';
 //import { Image } from '../config/mongoCollections.js';
 //import { ObjectId } from 'mongodb';
+import express from 'express';
+import Image from '../model.js';
+import exifReader from 'exif-reader';
+import sharp from 'sharp';
+import { findKeys, latLonToDecimal } from '../data/helpers.js';   
 
 const router = express.Router();
 
@@ -60,13 +62,41 @@ router.post('/upload', async (req, res) => {
     if (req.files.image.size > maxUploadSize) {
         return res.status(400).send(`Photo size must be less than ${maxUploadSize}`);
     }
-req.files.buff
+
     const { name, desc } = req.body;
     const imageFile = req.files.image;
 
-    // Extract metadata from photo
-    const parser = exifParser.create(imageFile.data);
-    const metadata = parser.parse();
+    let metadata = {};
+    try {
+        // Extract metadata from the image using sharp
+        const image = sharp(imageFile.data)
+            .withMetadata()
+            .toFormat('jpeg');
+        metadata = await image.metadata();
+
+        // Convert EXIF to display in Compass
+        if (metadata.exif) {
+            metadata.exif = exifReader(metadata.exif);
+        }
+
+        // Convert GPS coordinates to decimal format
+        const gpsKeys = ['GPSLatitude', 'GPSLongitude', 'GPSLatitudeRef', 'GPSLongitudeRef'];
+        const gpsData = findKeys(metadata, gpsKeys);
+        
+        if (gpsData.GPSLatitude && gpsData.GPSLongitude && gpsData.GPSLatitudeRef && gpsData.GPSLongitudeRef) {
+            const lat = gpsData.GPSLatitude;
+            const lon = gpsData.GPSLongitude;
+            const latRef = gpsData.GPSLatitudeRef;
+            const lonRef = gpsData.GPSLongitudeRef;
+
+            const { latitude, longitude } = latLonToDecimal(lat, lon, latRef, lonRef);
+            metadata.latitudeDecimal = latitude;
+            metadata.longitudeDecimal = longitude;
+        }
+
+    } catch (err) {
+        console.error('Error extracting metadata:', err);
+    }
 
     // Create a new image document
     const newImage = new Image({
@@ -76,8 +106,11 @@ req.files.buff
             data: imageFile.data,
             contentType: imageFile.mimetype
         },
-        metadata: metadata.tags
+        metadata: metadata
+        // *** Might need to filter the metadata object to remove unnecessary data? ***
     });
+
+    // TODO: Add check for lat/lon metadata and prompt user to enter manually if not found
 
     try {
         await newImage.save();
