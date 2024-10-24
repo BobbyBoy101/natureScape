@@ -98,6 +98,8 @@ router.post('/upload', async (req, res) => {
         console.error('Error extracting metadata:', err);
     }
 
+    // TODO: Add check for lat/lon metadata and prompt user to enter manually if not found
+
     // Create a new image document
     const newImage = new Image({
         name: name,
@@ -107,10 +109,9 @@ router.post('/upload', async (req, res) => {
             contentType: imageFile.mimetype
         },
         metadata: metadata
+        // *** Add user defined metadata here (lat/lon date) ***
         // *** Might need to filter the metadata object to remove unnecessary data? ***
     });
-
-    // TODO: Add check for lat/lon metadata and prompt user to enter manually if not found
 
     try {
         await newImage.save();
